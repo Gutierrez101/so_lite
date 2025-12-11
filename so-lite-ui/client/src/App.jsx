@@ -7,6 +7,7 @@ import StatsPanel from "./components/StatsPanel";
 import CPUPanel from "./components/CPUPanel";
 import MemoryPanel from "./components/MemoryPanel";
 import IOPanel from "./components/IOPanel";
+import SystemControls from "./components/controls/SystemControls";
 import "./index.css";
 
 export default function App() {
@@ -17,6 +18,11 @@ export default function App() {
       case "processes":
         return (
           <div className="content">
+            {/* Panel de Control del Sistema - Solo en la pestaña de procesos */}
+            <div style={{ gridColumn: '1 / -1', marginBottom: 20 }}>
+              <SystemControls />
+            </div>
+            
             <div className="left-panel">
               <AlgorithmForm />
               <div className="gantt-wrapper">
@@ -30,13 +36,34 @@ export default function App() {
         );
       
       case "cpu":
-        return <CPUPanel />;
+        return (
+          <>
+            <div style={{ padding: '0 20px', paddingTop: 20 }}>
+              <SystemControls />
+            </div>
+            <CPUPanel />
+          </>
+        );
       
       case "memory":
-        return <MemoryPanel />;
+        return (
+          <>
+            <div style={{ padding: '0 20px', paddingTop: 20 }}>
+              <SystemControls />
+            </div>
+            <MemoryPanel />
+          </>
+        );
       
       case "io":
-        return <IOPanel />;
+        return (
+          <>
+            <div style={{ padding: '0 20px', paddingTop: 20 }}>
+              <SystemControls />
+            </div>
+            <IOPanel />
+          </>
+        );
       
       default:
         return <div>Selecciona una pestaña</div>;
