@@ -83,27 +83,41 @@ export default function AlgorithmForm(){
         steps: 30
       });
 
-      // Obtener procesos actualizados
-      const processesData = await getAllProcesses();
+      console.log('Resultado de simulación:', result);
 
-      // Convertir datos para el Gantt
-      const timeline = processesData.data.map((proc, idx) => ({
-        pid: proc.name,
-        start: proc.arrival_time || 0,
-        duration: proc.burst_time - proc.remaining_time,
-        color: `hsl(${idx * 60}, 70%, 60%)`
-      }));
+      // Generar timeline para Gantt desde los procesos completados
+      if (result.processes && result.processes.length > 0) {
+        const colors = ['#1e90ff', '#ff6b6b', '#4ecdc4', '#95e1d3', '#f38181', '#aa96da'];
+        
+        const timeline = result.processes
+          .filter(proc => proc.state === 'TERMINATED' || proc.remaining_time < proc.burst_time)
+          .map((proc, idx) => ({
+            pid: proc.name,
+            start: 0, // Simplificado - en una implementación real calcularías esto
+            duration: proc.burst_time - proc.remaining_time,
+            color: colors[idx % colors.length]
+          }));
 
-      setTimeline(timeline);
+        setTimeline(timeline);
+      }
+
+      // Actualizar estadísticas
       setStats({
-        waitingAvg: result.metrics.avg_waiting_time,
-        turnaroundAvg: result.metrics.avg_turnaround_time
+        waitingAvg: result.metrics.avg_waiting_time || 0,
+        turnaroundAvg: result.metrics.avg_turnaround_time || 0
       });
 
-      alert('Simulación completada');
+      alert(`✅ Simulación completada
+      
+📊 Resultados:
+- Tiempo de espera: ${result.metrics.avg_waiting_time?.toFixed(2)} unidades
+- Tiempo de retorno: ${result.metrics.avg_turnaround_time?.toFixed(2)} unidades
+- Procesos completados: ${result.metrics.throughput}
+- Context Switches: ${result.metrics.total_context_switches}`);
+
     } catch (error) {
       console.error('Error ejecutando simulación:', error);
-      alert('Error: ' + error.message);
+      alert('Error: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }

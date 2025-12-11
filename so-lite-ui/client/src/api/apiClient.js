@@ -43,7 +43,16 @@ export const runSimulation = async (simConfig) => {
   const response = await api.post('/simulation/run', {
     algorithm: simConfig.algorithm || 'FCFS',
     time_quantum: simConfig.time_quantum || 4,
-    steps: simConfig.steps || 20
+    steps: simConfig.steps || 30
+  });
+  return response.data;
+};
+
+// Ejecutar un solo paso del scheduler
+export const scheduleStep = async (algorithm, quantum) => {
+  const response = await api.post('/cpu/schedule', {
+    algorithm: algorithm || 'FCFS',
+    time_quantum: quantum || 4
   });
   return response.data;
 };
