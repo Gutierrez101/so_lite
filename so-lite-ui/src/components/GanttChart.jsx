@@ -14,11 +14,15 @@ export default function GanttChart(){
   // get unique pids in timeline order
   const pids = Array.from(new Set(timeline.map(t => t.pid)));
   const endTime = timeline.reduce((m,t)=>Math.max(m, t.start + t.duration), 0);
-  const scale = 40; // pixels per time unit
+  
+  // Calcular escala dinámica para que quepa en el contenedor (máx 600px de ancho útil)
+  const maxWidth = 600;
+  const contentWidth = (endTime + 2) * 40; // ancho natural con escala 40
+  const scale = Math.min(40, (maxWidth / (endTime + 2)));
 
   return (
     <div className="gantt-card">
-      <div style={{fontWeight:600, marginBottom:8}}>Diagrama de Gantt</div>
+      <div style={{fontWeight:600, marginBottom:12, fontSize: '14px'}}>Diagrama de Gantt</div>
       <div className="gantt-area">
         <div className="gantt-left">
           {pids.length === 0 ? (
@@ -30,7 +34,7 @@ export default function GanttChart(){
           ))}
         </div>
 
-        <div className="gantt-grid" style={{minWidth:(endTime+2)*scale + "px"}}>
+        <div className="gantt-grid" style={{width:"100%", maxWidth:"100%", position:"relative"}}>
           {/* vertical time lines */}
           <div style={{position:"absolute",left:0,top:0,bottom:0,right:0}}>
             {Array.from({length: endTime+2}).map((_,i)=>(
